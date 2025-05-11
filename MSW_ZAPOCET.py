@@ -37,9 +37,9 @@ def sir_model(y, t, beta, gamma):
 
 # Vytvoření mřížky 3x2 pro více grafů v jednom okně
 fig, axs = plt.subplots(3, 2, figsize=(14, 12))
-axs = axs.flatten()  # Převede 2D pole os na 1D pro snadnější přístup
+axs = axs.flatten()  # Převedení 2D pole os na 1D
 
-# Smyčka přes všechny nemoci
+# Cyklus přes všechny nemoci
 for idx, nemoc in enumerate(nemoci):
     # Získání parametrů
     R0_val = nemoc["R0"]
@@ -49,7 +49,7 @@ for idx, nemoc in enumerate(nemoci):
     gamma = 1 / doba_nemoci        # Rychlost uzdravení
     beta = R0_val * gamma          # Rychlost šíření infekce
 
-    # Počáteční podmínky (resetované pro každou nemoc)
+    # Počáteční podmínky
     y0 = S0, I0, R0
 
     # Numerické řešení soustavy rovnic
@@ -170,7 +170,7 @@ print("- Muze dojit ke kolapsu predatora, stabilizaci, nebo chaosu – zalezi na
 #     dRdt = delta * S + alpha * S * Z - zeta * R
 #     return dSdt, dZdt, dRdt
 
-# # Počáteční stavy: zdraví lidé, zombie, odstranění
+# # Počáteční stavy: zdraví lidé, zombie, mrtví
 # S0 = 500
 # Z0 = 1
 # R0 = 0
@@ -182,9 +182,9 @@ print("- Muze dojit ke kolapsu predatora, stabilizaci, nebo chaosu – zalezi na
 # # Parametry modelu
 # beta = 0.005   # míra nakažení
 # delta = 0.0001 # přirozená úmrtnost
-# alpha = 0.005  # odstranění zombie
-# zeta = 0.0001  # reanimace mrtvých
-# pi = 0         # porodnost (přírůstek lidí)
+# alpha = 0.005  # mrtví zombie
+# zeta = 0.0001  # oživení mrtvých
+# pi = 0         # porodnost
 
 # # Výpočet řešení
 # reseni = odeint(szr_model, y0, t, args=(beta, delta, alpha, zeta, pi))
@@ -194,7 +194,7 @@ print("- Muze dojit ke kolapsu predatora, stabilizaci, nebo chaosu – zalezi na
 # plt.figure(figsize=(12, 6))
 # plt.plot(t, S, label='Zdraví (S)', color='blue')
 # plt.plot(t, Z, label='Zombie (Z)', color='red')
-# plt.plot(t, R, label='Odstranění (R)', color='gray')
+# plt.plot(t, R, label='Mrtví (R)', color='gray')
 # plt.xlabel("Čas (dny)")
 # plt.ylabel("Počet jedinců")
 # plt.title("Zombie Apokalypsa – Model SZR")
@@ -226,7 +226,7 @@ gamma = 0.002  # míra navrácení zombie zpět do života
 beta = 0.005   # míra nakažení
 delta = 0.0001 # přirozená úmrtnost
 alpha = 0.005  # "mrtví" zombie
-zeta = 0.0001  # reanimace mrtvých
+zeta = 0.0001  # oživení mrtvých
 pi = 0         # porodnost (přírůstek lidí)
 
 
