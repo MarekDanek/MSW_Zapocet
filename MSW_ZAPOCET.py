@@ -12,7 +12,7 @@ I0 = 1         # Počet nakažených na začátku
 R0 = 0         # Počet uzdravených na začátku
 S0 = N - I0 - R0  # Počet náchylných jedinců na začátku
 
-# Časová osa simulace – 300 dní s krokem 1 den
+# Časová osa – 300 dní s krokem 1 den
 t = np.linspace(0, 300, 300)
 
 # Mé vybrané nemoci
@@ -116,7 +116,7 @@ x0 = 10  # kořist
 y0 = 5  # predátor
 z0 = 3  #3. druh
 
-# Časový interval simulace
+# # Časová osa 
 t = np.linspace(0, 200, 1000)
 
 # Definice rozšířeného Lotka-Volterra modelu se 3 druhy
@@ -176,7 +176,7 @@ print("- Muze dojit ke kolapsu predatora, stabilizaci, nebo chaosu – zalezi na
 # R0 = 0
 # y0 = [S0, Z0, R0]
 
-# # Časová osa simulace (dny)
+# Časová osa 
 # t = np.linspace(0, 50, 1000)
 
 # # Parametry modelu
@@ -207,12 +207,17 @@ print("- Muze dojit ke kolapsu predatora, stabilizaci, nebo chaosu – zalezi na
 
 #rozšířená verze
 
-def szr_healing_model(y, t, beta, delta, alpha, zeta, pi, gamma):
+
+# Rozšířený SZR model: infekce i z mrtvých těl a uzdravení zombie
+def szr_healing_model(y, t, beta, delta, alpha, zeta, pi, gamma, eta):
     S, Z, R = y
-    dSdt = pi - beta * S * Z - delta * S + gamma * Z
-    dZdt = beta * S * Z + zeta * R - alpha * S * Z - gamma * Z
+    dSdt = pi - beta * S * Z - eta * S * R - delta * S + gamma * Z
+    dZdt = beta * S * Z + eta * S * R + zeta * R - alpha * S * Z - gamma * Z
     dRdt = delta * S + alpha * S * Z - zeta * R
     return dSdt, dZdt, dRdt
+
+# Časová osa
+t = np.linspace(0, 100, 1000)
 
 # Počáteční stavy: zdraví lidé, zombie, mrtví
 S0 = 500
@@ -220,28 +225,27 @@ Z0 = 1
 R0 = 0
 y0 = [S0, Z0, R0]
 
-# Nový parametr: léčba zombie
-gamma = 0.002  # míra navrácení zombie zpět do života
 # Parametry modelu
-beta = 0.005   # míra nakažení
-delta = 0.0001 # přirozená úmrtnost
-alpha = 0.005  # "mrtví" zombie
-zeta = 0.0001  # oživení mrtvých
-pi = 0         # porodnost (přírůstek lidí)
+beta = 0.007     # míra nakažení od zombie
+eta = 0.030      # míra nakažení od mrtvých
+delta = 0.0001   # přirozená úmrtnost
+alpha = 0.005    # mrtví po kontaktu se zombie
+zeta = 0.0001    # oživení mrtvých
+pi = 0           # porodnost (přírůstek lidí)
+gamma = 0.4      # míra léčení zombie
 
-
-# Řešení pro model
-reseni2 = odeint(szr_healing_model, y0, t, args=(beta, delta, alpha, zeta, pi, gamma))
+# Řešení diferenciálních rovnic
+reseni2 = odeint(szr_healing_model, y0, t, args=(beta, delta, alpha, zeta, pi, gamma, eta))
 S2, Z2, R2 = reseni2.T
 
-# Vizualizace nového modelu
+# Vizualizace výsledků
 plt.figure(figsize=(12, 6))
 plt.plot(t, S2, label='Zdraví (S)', color='blue')
 plt.plot(t, Z2, label='Zombie (Z)', color='green')
 plt.plot(t, R2, label='Mrtví (R)', color='red')
 plt.xlabel("Čas (dny)")
 plt.ylabel("Počet jedinců")
-plt.title("SZR model")
+plt.title("SZR model s léčením a nakažením z mrtvých těl")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
