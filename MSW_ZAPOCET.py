@@ -103,48 +103,45 @@ plt.show()
 
 #2. model Lotka-Volterra
 
+
+#základní verze se 2. druhy
+
 # Parametry modelu
-a = 0.6   # růst kořisti (x)
-b = 0.2    # predace kořisti predátorem (x -> y)
-c = 0.4    # úmrtnost predátora bez potravy (y)
-d = 0.05    # přeměna kořisti na predátory (růst y)
-e = 0.02   # predace predátora třetím druhem (y -> z)
-f = 0.02    # růst třetího druhu z potravy (y)
+a = 1.1   # růst kořisti (x)
+b = 0.4   # predace kořisti predátorem (x -> y)
+c = 0.4   # úmrtnost predátora bez potravy (y)
+d = 0.1  # přeměna kořisti na predátory (růst y)
 
-# Počáteční stavy: kořist, predátor, 3. druh
+# Počáteční stavy: kořist, predátor
 x0 = 10  # kořist
-y0 = 5  # predátor
-z0 = 3  #3. druh
+y0 = 10   # predátor
 
-# # Časová osa 
-t = np.linspace(0, 200, 1000)
+# Časová osa
+t = np.linspace(0, 50, 1000)
 
-# Definice rozšířeného Lotka-Volterra modelu se 3 druhy
-def lotka_volterra_3druhy(y, t, a, b, c, d, e, f):
-    x, y_, z = y  # rozbalení stavu
-    x = max(x, 0) # omezení růstu a záporných hodnot
+# Definice klasického Lotka-Volterra modelu pro 2 druhy
+def lotka_volterra_2druhy(y, a, b, c, d, t):
+    x, y_ = y
+    x = max(x, 0)
     y_ = max(y_, 0)
-    z = max(z, 0)
-    dxdt = a * x - b * x * y_            # růst kořisti - predace
-    dydt = d * x * y_ - c * y_ - e * y_ * z  # růst predátora - úmrtnost
-    dzdt = f * y_ * z                    # růst třetího druhu 
-    return dxdt, dydt, dzdt
+    dxdt = a * x - b * x * y_          # růst kořisti - predace
+    dydt = d * x * y_ - c * y_         # růst predátora - úmrtnost
+    return dxdt, dydt
 
 # Počáteční podmínky
-y_init = [x0, y0, z0]
+y_init = [x0, y0]
 
 # Řešení soustavy
-reseni = odeint(lotka_volterra_3druhy, y_init, t, args=(a, b, c, d, e, f))
-x, y_, z = reseni.T  # transpozice výsledků
+reseni = odeint(lotka_volterra_2druhy, y_init, t, args=(a, b, c, d))
+x, y_ = reseni.T
 
 # Vykreslení výsledků
 plt.figure(figsize=(12, 8))
 
 plt.plot(t, x, 'g-', label="Kořist")
 plt.plot(t, y_, 'r-', label="Predátor")
-plt.plot(t, z, 'b-', label="3. druh")
 
-plt.title("Rozšířený Lotka-Volterra model se třemi druhy")
+plt.title("Klasický Lotka-Volterra model (2 druhy)")
 plt.xlabel("Čas")
 plt.ylabel("Populace")
 plt.legend()
@@ -153,9 +150,68 @@ plt.tight_layout()
 plt.show()
 
 # Výpis informací pro popis
-print(f"- Pocatecni stavy: x0={x0}, y0={y0}, z0={z0}")
-print("- Model ukazuje, jak zavedeni 3. druhu ovlivnuje dynamiku mezi koristi a predatorem.")
-print("- Muze dojit ke kolapsu predatora, stabilizaci, nebo chaosu – zalezi na parametrech.")
+print(f"- Počáteční stavy: x0={x0}, y0={y0}")
+print("- Model ukazuje klasickou dynamiku predátor-kořist.")
+print("- Dochází ke cyklickým výkyvům populací obou druhů v čase.")
+
+
+
+# rozšířená verze s 3. druhem
+
+
+# # Parametry modelu
+# a = 0.6   # růst kořisti (x)
+# b = 0.2    # predace kořisti predátorem (x -> y)
+# c = 0.4    # úmrtnost predátora bez potravy (y)
+# d = 0.05    # přeměna kořisti na predátory (růst y)
+# e = 0.02   # predace predátora třetím druhem (y -> z)
+# f = 0.02    # růst třetího druhu z potravy (y)
+
+# # Počáteční stavy: kořist, predátor, 3. druh
+# x0 = 10  # kořist
+# y0 = 5  # predátor
+# z0 = 3  #3. druh
+
+# # # Časová osa 
+# t = np.linspace(0, 200, 1000)
+
+# # Definice rozšířeného Lotka-Volterra modelu se 3 druhy
+# def lotka_volterra_3druhy(y, a, b, c, d, e, f, t):
+#     x, y_, z = y  # rozbalení stavu
+#     x = max(x, 0) # omezení růstu a záporných hodnot
+#     y_ = max(y_, 0)
+#     z = max(z, 0)
+#     dxdt = a * x - b * x * y_            # růst kořisti - predace
+#     dydt = d * x * y_ - c * y_ - e * y_ * z  # růst predátora - úmrtnost
+#     dzdt = f * y_ * z                    # růst třetího druhu 
+#     return dxdt, dydt, dzdt
+
+# # Počáteční podmínky
+# y_init = [x0, y0, z0]
+
+# # Řešení soustavy
+# reseni = odeint(lotka_volterra_3druhy, y_init, t, args=(a, b, c, d, e, f))
+# x, y_, z = reseni.T  # transpozice výsledků
+
+# # Vykreslení výsledků
+# plt.figure(figsize=(12, 8))
+
+# plt.plot(t, x, 'g-', label="Kořist")
+# plt.plot(t, y_, 'r-', label="Predátor")
+# plt.plot(t, z, 'b-', label="3. druh")
+
+# plt.title("Rozšířený Lotka-Volterra model se třemi druhy")
+# plt.xlabel("Čas")
+# plt.ylabel("Populace")
+# plt.legend()
+# plt.grid(True)
+# plt.tight_layout()
+# plt.show()
+
+# # Výpis informací pro popis
+# print(f"- Pocatecni stavy: x0={x0}, y0={y0}, z0={z0}")
+# print("- Model ukazuje, jak zavedeni 3. druhu ovlivnuje dynamiku mezi koristi a predatorem.")
+# print("- Muze dojit ke kolapsu predatora, stabilizaci, nebo chaosu – zalezi na parametrech.")
 
 
 #####################################################################################################
